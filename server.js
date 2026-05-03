@@ -6,8 +6,6 @@ import { z } from "zod";
 const app = express();
 app.use(express.json());
 
-const N8N_URL = "https://dseiji.app.n8n.cloud/webhook/ga4-cro-analysis";
-
 function createServer() {
   const server = new McpServer({
     name: "ga4-cro-mcp",
@@ -28,8 +26,8 @@ function createServer() {
       return {
         content: [
           {
-            type: "json",
-            json: {
+            type: "text",
+            text: JSON.stringify({
               status: "ok",
               source: "mock_mcp",
               sessions: 1234,
@@ -55,7 +53,7 @@ function createServer() {
                   conversionRate: "2.50%"
                 }
               ]
-            }
+            })
           }
         ]
       };
