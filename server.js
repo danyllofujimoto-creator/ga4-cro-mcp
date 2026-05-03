@@ -28,8 +28,8 @@ function createServer() {
       return {
         content: [
           {
-            type: "text",
-            text: JSON.stringify({
+            type: "json",
+            json: {
               status: "ok",
               source: "mock_mcp",
               sessions: 1234,
@@ -55,7 +55,7 @@ function createServer() {
                   conversionRate: "2.50%"
                 }
               ]
-            })
+            }
           }
         ]
       };
