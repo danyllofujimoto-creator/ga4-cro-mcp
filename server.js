@@ -8,33 +8,6 @@ app.use(express.json());
 
 const N8N_URL = "https://dseiji.app.n8n.cloud/webhook/ga4-cro-analysis";
 
-function normalizeDates(args = {}) {
-  if (args.startDate && args.endDate) {
-    return {
-      startDate: args.startDate,
-      endDate: args.endDate
-    };
-  }
-
-  const periodo = args.periodo || args.period || "";
-
-  if (
-    periodo === "ultimos_7_dias" ||
-    periodo === "últimos_7_dias" ||
-    periodo === "last_7_days"
-  ) {
-    return {
-      startDate: "7daysAgo",
-      endDate: "today"
-    };
-  }
-
-  return {
-    startDate: "30daysAgo",
-    endDate: "today"
-  };
-}
-
 function createServer() {
   const server = new McpServer({
     name: "ga4-cro-mcp",
@@ -48,13 +21,10 @@ function createServer() {
       description: "Consulta o GA4 via n8n e retorna análise de CRO.",
       inputSchema: {
         startDate: z.string().optional(),
-        endDate: z.string().optional(),
-        periodo: z.string().optional(),
-        period: z.string().optional(),
-        analise: z.string().optional()
+        endDate: z.string().optional()
       }
     },
-       async (args) => {
+    async () => {
       return {
         content: [
           {
@@ -66,15 +36,31 @@ function createServer() {
               eventCount: 56,
               conversionRate: "4.54%",
               channelData: [
-                { channel: "Organic Search", sessions: 500, eventCount: 30, conversionRate: "6.00%" },
-                { channel: "Paid Search", sessions: 300, eventCount: 15, conversionRate: "5.00%" },
-                { channel: "Direct", sessions: 200, eventCount: 5, conversionRate: "2.50%" }
+                {
+                  channel: "Organic Search",
+                  sessions: 500,
+                  eventCount: 30,
+                  conversionRate: "6.00%"
+                },
+                {
+                  channel: "Paid Search",
+                  sessions: 300,
+                  eventCount: 15,
+                  conversionRate: "5.00%"
+                },
+                {
+                  channel: "Direct",
+                  sessions: 200,
+                  eventCount: 5,
+                  conversionRate: "2.50%"
+                }
               ]
             })
           }
         ]
       };
     }
+  );
 
   return server;
 }
