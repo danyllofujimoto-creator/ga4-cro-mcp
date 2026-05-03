@@ -6,6 +6,8 @@ import { z } from "zod";
 const app = express();
 app.use(express.json());
 
+const N8N_URL = "https://dseiji.app.n8n.cloud/webhook/ga4-cro-analysis";
+
 function createServer() {
   const server = new McpServer({
     name: "ga4-cro-mcp",
@@ -22,38 +24,25 @@ function createServer() {
         endDate: z.string().optional()
       }
     },
-    async () => {
+    async ({ startDate, endDate }) => {
+      const response = await fetch(N8N_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          startDate: startDate || "7daysAgo",
+          endDate: endDate || "today"
+        })
+      });
+
+      const data = await response.json();
+
       return {
         content: [
           {
             type: "text",
-            text: JSON.stringify({
-              status: "ok",
-              source: "mock_mcp",
-              sessions: 1234,
-              eventCount: 56,
-              conversionRate: "4.54%",
-              channelData: [
-                {
-                  channel: "Organic Search",
-                  sessions: 500,
-                  eventCount: 30,
-                  conversionRate: "6.00%"
-                },
-                {
-                  channel: "Paid Search",
-                  sessions: 300,
-                  eventCount: 15,
-                  conversionRate: "5.00%"
-                },
-                {
-                  channel: "Direct",
-                  sessions: 200,
-                  eventCount: 5,
-                  conversionRate: "2.50%"
-                }
-              ]
-            })
+            text: JSON.stringify(data)
           }
         ]
       };
